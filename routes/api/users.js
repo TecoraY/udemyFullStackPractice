@@ -2,6 +2,8 @@ const express =require ('express');
 const router = express.Router();
 const gravatar= require('gravatar');
 const bcrypt=require('bcryptjs');
+const jwt=require('jsonwebtoken');
+const config= require('config');
 //express validator-error handler
 const { check, validationResult}=require('express-validator/check');
 const User = require('../models/User');
@@ -50,10 +52,26 @@ async (request, response) => {
 
     user.password= await bcrypt.hash(password, salt);
 
-    await user.save();
-    
+    await user.save();//saves user to database
 
-    //return jsonwebtoken
+    const payload={
+        user:{
+            id:user.id//will pull id from mongoose. 
+        }
+    };
+    jwt.sign(payload, config.get('jwtSecret'),
+    {expiresIn: 360000},
+    (err, token)=>{
+        if (err) throw err;
+        response.json({token});
+    });
+    //return jsonwebtoken- jsonwebtoken allows you to store information 
+    //in encryption. the information that users input will be stored 
+    //in a way that only those with access will be able to decipher the 
+    //information.
+    //install it
+    //sign it and pass in payload, then use a callback, create middleware to verify token. either allow or disallow access based on the token.
+
     response.send('User registered');
     }catch(err){
     console.error(err.message);
