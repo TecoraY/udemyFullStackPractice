@@ -5,7 +5,7 @@ const bcrypt=require('bcryptjs');
 const jwt=require('jsonwebtoken');
 const config= require('config');
 //express validator-error handler
-const { check, validationResult}=require('express-validator/check');
+const { check, validationResult}=require('express-validator');
 const User = require('../models/User');
 
 
